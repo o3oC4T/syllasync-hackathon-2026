@@ -32,6 +32,25 @@ streamlit run app.py
 
 브라우저에서 `http://localhost:8501`에 접속하면 가상 샘플 대시보드가 바로 열립니다. API 키 없이 타임라인, 우선순위, 원문 근거, 일정 수정, PDF·JSON 다운로드를 확인할 수 있습니다. **가상 샘플로 학기 분석** 버튼으로 수정한 샘플을 초기화할 수 있습니다.
 
+## 외부 배포
+
+현재 상태: 배포 설정 준비 완료, 호스팅 계정 연결 대기. 아직 공개 데모 주소는 없습니다.
+
+GitHub 저장소의 코드를 Streamlit Community Cloud에 연결해 무료로 배포합니다. GitHub Pages는 정적 사이트 호스팅이므로 Python 서버가 필요한 이 앱을 그대로 실행할 수 없습니다. [GitHub Pages 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+
+1. [Streamlit Community Cloud](https://share.streamlit.io/)에 GitHub 계정으로 로그인합니다.
+2. **Create app → Deploy a public app from GitHub**에서 아래 값을 지정합니다.
+   - Repository: `o3oC4T/syllasync-hackathon-2026`
+   - Branch: `main`
+   - Main file path: `app.py`
+   - Advanced settings → Python: `3.12`
+3. **Deploy**를 누릅니다. API 키 없이 가상 샘플 대시보드가 실행됩니다.
+4. 실제 발급된 `https://…streamlit.app` 공개 주소를 확인하고 제출 양식 3-3에 입력합니다.
+
+기존 포트폴리오와 별도 저장소·주소를 사용합니다. [Streamlit 공식 배포 안내](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)
+
+실제 Studio 분석을 활성화할 때는 Streamlit Cloud의 Secrets에 `.streamlit/secrets.toml.example` 형식으로 API 키와 Agent ID를 설정합니다. 서버 API 키는 브라우저 입력란의 기본값에 넣지 않으며, 개인 키를 입력하면 해당 세션에서 우선 사용합니다. 서버 키를 등록하면 방문자가 그 키로 Studio 분석을 실행할 수 있습니다.
+
 ## 화면 디자인
 
 [Tabler](https://docs.tabler.io/ui/getting-started)의 MIT 라이선스 UI 키트 **1.4.0**과 **Tabler Icons 3.35.0**을 실제 정적 자산으로 포함했습니다. Tabler 카드·배지·표·아바타를 사용하고, SyllaSync의 녹색 브랜드와 학기 계획 흐름에 맞춰 구성했습니다. 외부 CDN에 연결하지 않아도 디자인이 표시됩니다.

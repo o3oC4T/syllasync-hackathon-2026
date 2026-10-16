@@ -36,7 +36,11 @@ with st.sidebar:
     semester_start = st.date_input("1주차 시작일", date(2026, 9, 1)) if use_dates else None
     st.caption("정확한 날짜가 있는 일정만 주차로 환산합니다.")
     with st.expander("Studio 연결 설정", expanded=False):
-        api_key = st.text_input("Upstage API Key", value=os.getenv("UPSTAGE_API_KEY", ""), type="password")
+        entered_api_key = st.text_input("Upstage API Key", type="password")
+        # Resolve server credentials after rendering: widget defaults are sent to browsers.
+        api_key = entered_api_key.strip() or os.getenv("UPSTAGE_API_KEY", "")
+        if os.getenv("UPSTAGE_API_KEY"):
+            st.caption("서버에 API 키가 설정되어 있습니다. 개인 키를 입력하면 이번 세션에 우선 사용합니다.")
         syllabus_id = st.text_input("Syllabus Agent ID", value=os.getenv("SYLLABUS_AGENT_ID", ""))
         schedule_id = st.text_input("Schedule Agent ID", value=os.getenv("SCHEDULE_AGENT_ID", ""))
         load_id = st.text_input("Load Agent ID", value=os.getenv("LOAD_AGENT_ID", ""))
