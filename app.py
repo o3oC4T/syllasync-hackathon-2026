@@ -44,7 +44,7 @@ with st.sidebar:
     semester_start = st.date_input("1주차 시작일", date(2026, 9, 1)) if use_dates else None
     st.caption("정확한 날짜가 있는 일정만 주차로 환산합니다.")
     with st.expander("Studio 연결 설정", expanded=False):
-        entered_api_key = st.text_input("Upstage API Key", type="password")
+        entered_api_key = st.text_input("Upstage API Key", type="password", help="키를 붙여넣은 뒤 Enter를 눌러 적용하세요.")
         # Resolve server credentials after rendering: widget defaults are sent to browsers.
         api_key = entered_api_key.strip() or os.getenv("UPSTAGE_API_KEY", "")
         if os.getenv("UPSTAGE_API_KEY"):

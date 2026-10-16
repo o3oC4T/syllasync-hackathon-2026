@@ -100,7 +100,7 @@ Studio API 모드에서는 파일을 `/v2/files`로 업로드하고 `/v2/respons
 ## 실제 Studio 연결
 
 1. 학교 계정용 Agent ID와 실행한 Config 버전은 `studio_agents.json`에 기본 설정했습니다. 이 값에는 API 키가 없습니다.
-2. **Studio 연결 설정**에 해당 계정의 API 키를 입력하거나 `.env` / Streamlit Secrets의 `UPSTAGE_API_KEY`에 설정합니다.
+2. **Studio 연결 설정**에 해당 계정의 API 키를 입력하고 Enter로 적용하거나 `.env` / Streamlit Secrets의 `UPSTAGE_API_KEY`에 설정합니다.
 3. **Studio API 분석**에서 강의계획서와 개인 일정표를 업로드합니다. **처리 흐름**에서 Load Agent 전략 설명을 생성할 수 있습니다.
 4. 다른 계정으로 재현할 때는 `agent_configs/*.studio.json`을 Studio에서 가져와 샘플로 실행한 뒤, Agent ID와 Config ID 환경변수를 자신의 값으로 변경합니다.
 
