@@ -4,6 +4,8 @@
 
 팀명: **`std::~bug()`**
 
+**[공개 데모 열기](https://syllasync-hackathon-2026-es3u98ijuj2rytawpirmvv.streamlit.app/)** — API 키 없이 가상 샘플 대시보드를 체험할 수 있습니다.
+
 | 이름 | 역할 |
 |---|---|
 | 최영 | 팀장 |
@@ -34,7 +36,9 @@ streamlit run app.py
 
 ## 외부 배포
 
-현재 상태: 배포 설정 준비 완료, 호스팅 계정 연결 대기. 아직 공개 데모 주소는 없습니다.
+현재 상태: Streamlit Community Cloud 공개 배포 완료. 로그인 없이 최신 대시보드 접속, 탭 이동, 일정 수정, PDF·JSON 다운로드, 모바일 화면을 확인했습니다.
+
+공개 주소: https://syllasync-hackathon-2026-es3u98ijuj2rytawpirmvv.streamlit.app/
 
 GitHub 저장소의 코드를 Streamlit Community Cloud에 연결해 무료로 배포합니다. GitHub Pages는 정적 사이트 호스팅이므로 Python 서버가 필요한 이 앱을 그대로 실행할 수 없습니다. [GitHub Pages 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
 
@@ -75,7 +79,7 @@ Tabler CSS는 `.ss` 영역으로 범위를 제한해 Streamlit 기본 입력창�
 | Upstage Studio Files / Responses 연동 | 코드 구현, 요청 구조와 오류 처리를 모의 응답으로 검증 |
 | Syllabus / Schedule / Load Agent | Studio 가져오기용 설정 초안 제공 |
 | 실제 Studio 실행·추출 정확도 | API 키와 팀 Agent ID가 없어 미검증 |
-| 외부 사이트 배포 | 미배포 |
+| 외부 사이트 배포 | Streamlit Community Cloud 공개 배포, 비로그인 접속·수정·다운로드·모바일 확인 |
 
 `data/demo.json`은 직접 작성한 가상 PDF에 맞춘 수작업 정답 데이터입니다. API 추출 결과나 모델 정확도 측정 자료가 아닙니다. `agent_configs/*.draft.json`은 공개 스타터 코드의 설정 구조를 참고해 새로 구성한 초안이며, 팀 Studio에서 내보낸 최종 파일이 아닙니다.
 
