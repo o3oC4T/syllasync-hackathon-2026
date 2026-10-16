@@ -30,7 +30,21 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-브라우저에서 `http://localhost:8501`에 접속한 뒤 **가상 샘플로 학기 분석**을 누릅니다. API 키 없이 타임라인, 우선순위, 원문 근거, 일정 수정, PDF·JSON 다운로드를 확인할 수 있습니다.
+브라우저에서 `http://localhost:8501`에 접속하면 가상 샘플 대시보드가 바로 열립니다. API 키 없이 타임라인, 우선순위, 원문 근거, 일정 수정, PDF·JSON 다운로드를 확인할 수 있습니다. **가상 샘플로 학기 분석** 버튼으로 수정한 샘플을 초기화할 수 있습니다.
+
+## 화면 디자인
+
+[Tabler](https://docs.tabler.io/ui/getting-started)의 MIT 라이선스 UI 키트 **1.4.0**과 **Tabler Icons 3.35.0**을 실제 정적 자산으로 포함했습니다. Tabler 카드·배지·표·아바타를 사용하고, SyllaSync의 녹색 브랜드와 학기 계획 흐름에 맞춰 구성했습니다. 외부 CDN에 연결하지 않아도 디자인이 표시됩니다.
+
+- 과목별 일정표와 주차별 집중도 막대, 다가오는 일정 카드
+- 상위 3개 준비 항목과 주간 시간 배분 카드
+- 원문 인용문·출처, 직접 수정, 단계별 처리 흐름
+- 모바일에서는 지표를 2열로 표시하고 넓은 일정표 안에서 가로 스크롤
+- 화면에 표시할 문서 내용을 HTML 이스케이프하고, 입력·탭·다운로드는 Streamlit 기본 컨트롤 사용
+
+Tabler CSS는 `.ss` 영역으로 범위를 제한해 Streamlit 기본 입력창과 분리했습니다. 추가 스타일은 `assets/dashboard.css`, 화면 구성요소는 `ui.py`에 있습니다. 두 프로젝트의 MIT 저작권·허가문은 `assets/vendor/`에 보존했으며, Streamlit은 화면 검증에 사용한 `1.66.0`으로 고정했습니다.
+
+디자인 개선은 실제 Upstage 연결 완료를 뜻하지 않습니다. API 키와 팀 Agent ID를 설정한 뒤 실제 문서로 실행 검증해야 합니다.
 
 ## 현재 구현 범위
 
@@ -95,7 +109,8 @@ python -m pytest -q tests
 ## 디렉터리
 
 ```text
-app.py                 Streamlit 화면
+app.py                 Streamlit 화면 및 상호작용
+ui.py                  Tabler 기반 화면 구성요소
 models.py              추출 데이터 계약 및 검증
 analysis.py            병합·위험도·우선순위
 studio.py              Upstage Files / Responses 클라이언트
@@ -103,7 +118,9 @@ pdf_export.py          PDF 리포트 생성
 agent_configs/         Studio 설정 초안 3개
 data/                  가상 PDF 4개와 수작업 정답 JSON
 tests/                 계산·응답·오류 처리 테스트
-assets/                한글 폰트와 OFL 라이선스
+assets/dashboard.css   SyllaSync 화면 스타일
+assets/vendor/         Tabler CSS·아이콘 및 MIT 라이선스
+assets/                화면 이미지, 한글 폰트와 OFL 라이선스
 ```
 
 ## 참고 자료
@@ -112,4 +129,5 @@ assets/                한글 폰트와 OFL 라이선스
 - [Upstage Create job](https://console.upstage.ai/api/agents/jobs/create-job)
 - [Upstage Retrieve job](https://console.upstage.ai/api/agents/jobs/retrieve-job)
 - [Upstage Document Parse](https://console.upstage.ai/api/parse/document-parsing)
+- [Tabler](https://github.com/tabler/tabler), [Tabler Icons](https://github.com/tabler/tabler-icons): UI 구성요소와 아이콘, MIT 라이선스.
 - Nanum Gothic: `assets/OFL.txt` 라이선스에 따라 사용합니다.

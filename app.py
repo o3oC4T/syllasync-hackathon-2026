@@ -1,7 +1,5 @@
 """SyllaSync: syllabus evidence → a semester plan. Run: streamlit run app.py"""
-import html
 import json
-import math
 import os
 from datetime import date
 from pathlib import Path
@@ -15,26 +13,12 @@ from analysis import analyze, report_text
 from models import Course, Dataset, Schedule
 from pdf_export import text_pdf
 from studio import StudioClient, StudioError
+import ui
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / ".env")
-st.set_page_config(page_title="SyllaSync · 나의 학기 지도", page_icon="📚", layout="wide")
-st.markdown("""<style>
-.block-container{padding-top:4rem;max-width:1400px} h1,h2,h3{letter-spacing:-.04em}
-[data-testid="stMetric"]{background:#fff;border:1px solid #dfe9e3;border-radius:15px;padding:14px 20px}
-[data-testid="stMetricLabel"]{color:#637c72}[data-testid="stMetricValue"]{color:#154f47}
-.eyebrow{font-size:12px;letter-spacing:.18em;color:#087f75;font-weight:700}
-.hero{display:flex;justify-content:space-between;align-items:center;gap:30px;margin:6px 0 22px}
-.hero h1{font-size:44px;margin:0 0 8px;line-height:1.2}.hero p{color:#61776e;font-size:17px;margin:0}
-.pill{background:#e1f2e6;color:#176348;border-radius:40px;padding:10px 18px;white-space:nowrap;font-size:14px}
-.week-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin:16px 0 18px}
-.week{background:#fff;border:1px solid #dfe9e3;border-radius:12px;padding:13px;min-height:100px}
-.week strong{display:block;font-size:21px;margin:9px 0 4px}.week small{font-size:11px}
-.red{background:#fdece9;border-color:#edb1a5;color:#973a30}.yellow{background:#fff3d8;border-color:#ead494;color:#78591e}
-.green{background:#e8f3ed;color:#2a624b}.empty{color:#82938c}.current{outline:2px solid #087f75}
-.note{font-size:12px;color:#6c8177}.panel{padding:22px;border:1px solid #dfe9e3;border-radius:16px;background:white;margin-bottom:12px}
-@media(max-width:900px){.week-grid{grid-template-columns:repeat(4,1fr)}.hero{display:block}.hero h1{font-size:34px}.pill{display:inline-block;margin-top:16px}}
-</style>""", unsafe_allow_html=True)
+st.set_page_config(page_title="SyllaSync · 나의 학기 지도", page_icon="🌿", layout="wide")
+ui.styles()
 
 
 def get_client():
@@ -42,28 +26,35 @@ def get_client():
 
 
 with st.sidebar:
-    st.markdown("## SyllaSync")
-    st.caption("실라싱크 · 나의 학기 지도")
-    st.divider()
+    ui.brand()
+    ui.sidebar_label("WORKSPACE")
     mode = st.radio("데이터 선택", ["가상 샘플 데모", "Studio API 분석", "결과 JSON 불러오기"])
+    st.divider()
+    ui.sidebar_label("MY SEMESTER")
     current_week = st.slider("지금은 몇 주차인가요?", 1, 20, 7)
     use_dates = st.checkbox("날짜를 학기 주차로 환산")
     semester_start = st.date_input("1주차 시작일", date(2026, 9, 1)) if use_dates else None
-    st.caption("주차만 있는 일정에는 정확한 날짜를 임의로 붙이지 않습니다.")
+    st.caption("정확한 날짜가 있는 일정만 주차로 환산합니다.")
     with st.expander("Studio 연결 설정", expanded=False):
         api_key = st.text_input("Upstage API Key", value=os.getenv("UPSTAGE_API_KEY", ""), type="password")
         syllabus_id = st.text_input("Syllabus Agent ID", value=os.getenv("SYLLABUS_AGENT_ID", ""))
         schedule_id = st.text_input("Schedule Agent ID", value=os.getenv("SCHEDULE_AGENT_ID", ""))
         load_id = st.text_input("Load Agent ID", value=os.getenv("LOAD_AGENT_ID", ""))
         st.caption("Config ID는 .env에서 설정합니다. API 모드에서 업로드한 문서는 Upstage로 전송됩니다.")
+    connection_label = "연결 정보 입력됨 · 실행 시 검증" if api_key and syllabus_id else "Upstage 연결 설정 필요"
+    ui.render(f'<div class="ss-connection">{ui.icon("plug-connected")}{connection_label}</div>')
     st.divider()
-    st.caption("강의계획서를 읽는 시간은 줄이고,\n준비할 시간은 먼저 확보하세요.")
+    ui.render('<div class="ss-team"><span class="avatar">S</span><div>std::~bug()<small>SyllaSync · 팀 워크스페이스</small></div></div>')
 
-st.markdown('<div class="eyebrow">FROM SYLLABUS TO STRATEGY</div><div class="hero"><div><h1>한 학기를, 한눈에.</h1><p>시험이 몰리는 주를 먼저 알고, 오늘의 준비 순서를 정하세요.</p></div><div class="pill">SyllaSync · 실라싱크</div></div>', unsafe_allow_html=True)
+ui.header(current_week, mode)
 
 if mode == "가상 샘플 데모":
-    st.info("가상 샘플 3과목으로 체험합니다. 수작업으로 구성한 예시 데이터이며, 실시간 AI 추출 결과가 아닙니다.")
-    if st.button("가상 샘플로 학기 분석", type="primary"):
+    with st.container(key="demo_controls"):
+        demo_note, demo_reset = st.columns([4, 1.25], vertical_alignment="center")
+        with demo_note:
+            ui.render('<div class="ss-demo-note"><span class="badge">DEMO</span><span>가상 샘플 데이터로 둘러보는 학기 대시보드</span></div>')
+        reset_demo = demo_reset.button("가상 샘플로 학기 분석", width="stretch")
+    if reset_demo or "dataset" not in st.session_state or st.session_state.get("dataset_mode") != mode:
         st.session_state.dataset = json.loads((ROOT / "data/demo.json").read_text(encoding="utf-8"))
         st.session_state.dataset_mode = mode
         st.session_state.pop("load_result", None)
@@ -114,46 +105,39 @@ else:
                 st.error(str(exc) if isinstance(exc, StudioError) else "Studio 출력이 스키마와 맞지 않습니다. Agent 설정과 결과 JSON을 확인해 주세요.")
 
 if "dataset" not in st.session_state or st.session_state.get("dataset_mode") != mode:
-    st.markdown('<div class="panel"><h3>학기 계획, 이 순서로 시작하세요.</h3><p>01 강의계획서 준비　 →　 02 시험·과제 구조화　 →　 03 집중 주간 확인　 →　 04 준비 순서 결정</p><span class="note">샘플 버튼을 누르면 8주차·16주차 시험 집중과 마감 미정 과제를 함께 확인할 수 있습니다.</span></div>', unsafe_allow_html=True)
+    ui.empty(mode)
     st.stop()
 
 data = Dataset.model_validate(st.session_state.dataset)
 result = analyze(data, current_week, semester_start)
 text = report_text(result)
 active = [w for w in result["weeks"] if w["risk"] == "Red" and w["week"] >= current_week]
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("분석한 과목", f"{len(data.courses)}개")
-c2.metric("시험·과제 일정", f"{len(result['events'])}건")
-c3.metric("앞으로 집중할 주간", f"{len(active)}주")
-c4.metric("마감 확인 필요", f"{result['unknown_count']}건")
-st.write("")
+with st.container(key="metrics"):
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("분석한 과목", f"{len(data.courses)}개", delta="나의 강의계획서", delta_color="off")
+    c2.metric("시험·과제 일정", f"{len(result['events'])}건", delta="한곳에 모인 학기 일정", delta_color="off")
+    c3.metric("앞으로 집중할 주간", f"{len(active)}주", delta="미리 준비할 집중 주간", delta_color="off")
+    c4.metric("마감 확인 필요", f"{result['unknown_count']}건", delta="새 공지 확인하기", delta_color="off")
 timeline, priority, evidence, edit, flow = st.tabs(["학기 타임라인", "준비 우선순위", "원문 근거", "일정 수정", "처리 흐름"])
 
 with timeline:
-    st.subheader("바쁜 주간을 미리 발견하세요")
-    st.caption("Red 집중 · Yellow 주의 · Green 일정 있음 · 회색 확인된 일정 없음")
-    cards = []
-    for w in result["weeks"]:
-        cls = w["risk"].lower() if w["count"] else "empty"
-        cls += " current" if w["week"] == current_week else ""
-        label = f"{w['count']}건" if w["count"] else "—"
-        detail = f"비중 합계 {w['weight_points']:g}점" if w["count"] else "등록 일정 없음"
-        cards.append(f'<div class="week {cls}"><small>{w["week"]:02d} WEEK</small><strong>{label}</strong><small>{detail}</small></div>')
-    st.markdown('<div class="week-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
-    chosen = st.selectbox("자세히 볼 주차", range(1, len(result["weeks"]) + 1), index=min(7, len(result["weeks"])-1), format_func=lambda w: f"{w}주차")
-    selected = result["weeks"][chosen - 1]
-    if selected["events"]:
-        st.dataframe(pd.DataFrame([{"과목": r["course"], "일정": r["title"], "평가 비중": f'{r["weight"]:g}%' if r["weight"] is not None else "미정", "제출 방식": r["submission"]} for r in selected["events"]]), hide_index=True, width="stretch")
-    else:
-        st.caption("확인된 일정이 없습니다. 미정 과제와 이후 공지도 확인해 주세요.")
+    ui.section("학기의 흐름을 읽어보세요", "일정이 겹치는 주간을 발견하면, 준비할 시간이 생깁니다.")
+    calendar, focus = st.columns([2.9, 1], gap="medium")
+    with calendar:
+        ui.overview(result, data.courses, current_week)
+    with focus:
+        ui.focus(result)
+    week_control, week_hint = st.columns([1, 3], vertical_alignment="bottom")
+    chosen = week_control.selectbox("자세히 볼 주차", range(1, len(result["weeks"]) + 1), index=min(7, len(result["weeks"])-1), format_func=lambda w: f"{w}주차")
+    week_hint.caption("집중도는 일정 수와 평가 비중을 함께 반영합니다. 같은 주 일정이 실제 시간 충돌을 의미하지는 않습니다.")
+    ui.week_table(result["weeks"][chosen - 1])
     st.caption(result["limitation"])
 
 with priority:
-    st.subheader("오늘 시작할 준비 순서")
-    st.caption(f"{current_week}주차 기준 · 평가 비중, 남은 주차, 같은 주 일정 수로 계산합니다.")
+    ui.section("오늘, 무엇부터 준비할까요?", f"{current_week}주차 기준 · 평가 비중, 남은 주차, 같은 주 일정 수로 정한 준비 순서입니다.")
     if result["ranking"]:
-        top = result["ranking"][0]
-        st.success(f"먼저 준비해 보세요: {top['course']} · {top['title']} · {top['week']}주차 · {top['weight']:g}%")
+        ui.priority_cards(result["ranking"])
+        ui.section("전체 준비 목록")
         table = []
         for i, r in enumerate(result["ranking"], 1):
             table.append({"순위": i, "과목": r["course"], "준비할 일": r["title"], "주차": r["week"], "평가 비중(%)": r["weight"], "추천 점수": r["score"], "이번 주 시간 제안": f'{r["suggested_hours"]:g}시간' if r["suggested_hours"] is not None else "가용 시간 미입력"})
@@ -167,21 +151,18 @@ with priority:
         st.write("일정·비중 미정 항목과 지난 일정은 추천 점수 계산에서 제외합니다. 수치는 팀이 정한 설명 가능한 규칙이며, 학습 성과를 검증한 예측 모델은 아닙니다.")
 
 with evidence:
-    st.subheader("추천을 만든 원문 근거")
+    ui.section("모든 추천에는, 근거가 있어야 하니까.", "추출한 일정의 근거 문장과 출처 페이지를 확인하세요.")
     for c in data.courses:
         with st.expander(c.course_name, expanded=True):
             st.caption(c.source_file)
             for e in c.events:
-                st.markdown(f"**{e.title}** · {str(e.week)+'주차' if e.week else '주차 미정'} · {str(e.weight)+'%' if e.weight is not None else '비중 미정'}")
-                st.write(e.evidence or "근거 문장을 확인해 주세요.")
-                st.caption(f"근거 위치: {e.page or '미상'}쪽")
-    st.subheader("확인할 정보")
+                ui.evidence_event(e)
+    ui.section("확인할 정보", "확정되지 않은 정보는 공지를 확인한 뒤 반영해 주세요.")
     for issue in result["issues"]:
         st.warning(issue)
 
 with edit:
-    st.subheader("새 공지가 나오면, 일정을 바로 고치세요")
-    st.caption("원문 또는 공지로 확인한 주차·평가 비중만 입력하세요. 수정하면 추천도 다시 계산됩니다.")
+    ui.section("계획은 바뀌어도, 준비는 이어지도록.", "새 공지로 확인한 주차·평가 비중을 입력하세요. 수정하면 추천도 다시 계산됩니다.")
     edit_rows = [{"과목": c.course_name, "일정": e.title, "주차": e.week, "평가 비중(%)": e.weight} for c in data.courses for e in c.events]
     with st.form("edit_events"):
         edited = st.data_editor(pd.DataFrame(edit_rows), hide_index=True, disabled=["과목", "일정"],
@@ -213,8 +194,8 @@ with edit:
             st.error("주차와 평가 비중의 입력 범위를 확인해 주세요.")
 
 with flow:
-    st.subheader("문서에서 계획까지, 근거를 이어갑니다")
-    st.markdown("**강의계획서 → Syllabus Agent: Parse → Extract → 과목 JSON**\n\n**개인 일정표 → Schedule Agent: Parse → Extract → 시간 제약 JSON**\n\n**Python 병합·검증 → 주차별 집중도·우선순위 → Streamlit 화면·PDF 리포트**\n\n**병합 리포트 PDF → Load Agent: Parse → Classify → 분류별 Extract → 전략 설명**")
+    ui.section("문서에서 계획까지", "원문을 읽고, 근거를 모으고, 다음 행동으로 연결합니다.")
+    ui.workflow()
     st.caption("데모에서는 미리 작성한 가상 JSON으로 병합 이후 단계를 실행합니다. Studio 연결은 실제 API 호출 시에만 사용합니다.")
     if st.button("Load Agent로 전략 설명 생성", disabled=not (api_key and load_id)):
         try:
@@ -231,8 +212,9 @@ with flow:
     st.caption("API Key와 Load Agent ID를 입력하면 실행할 수 있습니다. AI 설명은 위 규칙 기반 계산과 함께 확인하세요.")
 
 st.divider()
+ui.section("나의 계획, 어디서든 이어가기", "학기 리포트와 데이터를 내려받아 보관하세요.")
 d1, d2, d3 = st.columns(3)
 d1.download_button("학기 리포트 PDF", data=text_pdf("SyllaSync 학기 전략", text), file_name="SyllaSync_리포트.pdf", mime="application/pdf", width="stretch")
 d2.download_button("구조화 데이터 JSON", data=data.model_dump_json(indent=2), file_name="SyllaSync_데이터.json", mime="application/json", width="stretch")
 d3.download_button("분석 결과 JSON", data=json.dumps(result, ensure_ascii=False, indent=2), file_name="SyllaSync_분석.json", mime="application/json", width="stretch")
-st.caption("SyllaSync · 대학생의 시험·과제 준비를 돕는 문서 기반 학기 계획 도구")
+ui.render('<div class="ss-footer"><span><b>SyllaSync</b> · 조금 더 여유로운 학기를 위해</span><span>std::~bug() · 2026 Upstage Hackathon</span></div>')

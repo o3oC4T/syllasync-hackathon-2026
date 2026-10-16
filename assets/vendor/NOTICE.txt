@@ -1,0 +1,20 @@
+Third-party assets used by the SyllaSync dashboard
+
+Tabler UI 1.4.0 — MIT license
+Source: https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css
+Project: https://github.com/tabler/tabler
+License: TABLER-LICENSE.txt
+The compiled CSS is vendored as tabler-scoped.min.css. Selectors are prefixed
+with .ss (root selectors remapped to .ss) to isolate the UI kit from Streamlit.
+The original CSS copyright notice is retained. SyllaSync's own overrides live
+in ../dashboard.css. Bootstrap is included in Tabler's compiled stylesheet; its MIT copyright
+and permission notice are preserved in BOOTSTRAP-LICENSE.txt.
+
+Tabler Icons 3.35.0 — MIT license
+Source: https://cdn.jsdelivr.net/npm/@tabler/icons@3.35.0/icons/outline/
+Project: https://github.com/tabler/tabler-icons
+License: TABLER-ICONS-LICENSE.txt
+A subset of outline SVG icons is vendored in tabler-icons/. Runtime changes
+add accessibility attributes and set decorative sidebar icon colors.
+
+No paid template, charting library, or externally hosted runtime asset is used.
