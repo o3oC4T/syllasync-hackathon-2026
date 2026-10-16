@@ -1,0 +1,55 @@
+{
+  "course_name": "통계학 입문",
+  "source_file": "",
+  "notes": "",
+  "assessments": [
+    {
+      "name": "출석",
+      "weight": 10
+    },
+    {
+      "name": "중간고사",
+      "weight": 30
+    },
+    {
+      "name": "기말고사",
+      "weight": 40
+    },
+    {
+      "name": "분석 보고서",
+      "weight": 20
+    }
+  ],
+  "events": [
+    {
+      "title": "중간고사",
+      "kind": "exam",
+      "week": 8,
+      "due_date": "",
+      "weight": 30,
+      "submission": "미기재",
+      "evidence": "8주차 중간고사, 평가 비중 30%.",
+      "page": 1
+    },
+    {
+      "title": "데이터 분석 보고서",
+      "kind": "assignment",
+      "week": 14,
+      "due_date": "",
+      "weight": 20,
+      "submission": "LMS에 제출",
+      "evidence": "14주차 데이터 분석 보고서를 LMS에 제출한다. 평가 비중 20%.",
+      "page": 1
+    },
+    {
+      "title": "기말고사",
+      "kind": "exam",
+      "week": 16,
+      "due_date": "",
+      "weight": 40,
+      "submission": "미기재",
+      "evidence": "16주차 기말고사, 평가 비중 40%.",
+      "page": 1
+    }
+  ]
+}

@@ -79,6 +79,8 @@ def analyze(data: Dataset, current_week: int = 7, semester_start: date | None = 
         peak = max(levels, key=lambda x: {"Green": 0, "Yellow": 1, "Red": 2}[x], default="Green")
         courses.append({"course": course.course_name, "event_count": len(items), "peak_load": peak})
     return {"provenance": data.provenance, "current_week": current_week, "weeks": weeks,
+            "available_hours_per_week": hours,
+            "schedule_evidence": data.schedule.evidence if data.schedule else "",
             "events": rows, "ranking": ranking, "courses": courses,
             "issues": list(dict.fromkeys(issues)),
             "unknown_count": sum(r["week"] is None for r in rows),
@@ -89,13 +91,18 @@ def analyze(data: Dataset, current_week: int = 7, semester_start: date | None = 
 
 def report_text(result: dict) -> str:
     lines = ["SyllaSync 학기 전략 리포트", "데이터: " + result["provenance"],
-             f"분석 기준: {result['current_week']}주차", "", "일정 집중 주간"]
+             f"분석 기준: {result['current_week']}주차"]
+    hours = result.get("available_hours_per_week")
+    lines += [f"주간 학습 가능 시간: {hours:g}시간" if hours is not None else "주간 학습 가능 시간: 미입력",
+              "개인 일정 근거: " + (result.get("schedule_evidence") or "미기재"), "", "일정 집중 주간"]
     for week in result["weeks"]:
         if week["count"]:
             lines.append(f"{week['week']}주차 | {week['risk']} | {week['count']}건 | 평가 비중 합계 {week['weight_points']:g}점")
     lines += ["", "준비 우선순위"]
     for i, row in enumerate(result["ranking"], 1):
         lines.append(f"{i}. {row['course']} · {row['title']} · {row['week']}주차 · {row['weight']:g}% · 추천 점수 {row['score']}")
+        if row.get("suggested_hours") is not None:
+            lines.append(f"   이번 주 시간 배분 제안: {row['suggested_hours']:g}시간")
         lines.append(f"   근거: {row['evidence']} ({row['source_file']}, {row['page'] or '미상'}쪽)")
     lines += ["", "확인할 정보", *result["issues"], "", "산정 기준", result["rules"],
               result["score_formula"], result["limitation"],

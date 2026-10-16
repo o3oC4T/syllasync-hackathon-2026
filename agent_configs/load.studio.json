@@ -1,0 +1,299 @@
+{
+  "kind": "studio.workflow-config-draft",
+  "schemaVersion": 4,
+  "exportedAt": "2026-10-16T19:02:13.511Z",
+  "exportedFrom": {
+    "workflowId": "agt_RZLjfCp9DYRapG9Baefr3U",
+    "workflowName": "SyllaSync Load Agent",
+    "configId": "cfg_LgHfZpKDk8MPNfcfu2LLBD",
+    "configVer": 1
+  },
+  "workflowConfig": {
+    "workflow_name": "SyllaSync Load Agent",
+    "pipelineType": "classify-extract",
+    "documentParseConfiguration": {
+      "modelName": "document-parse",
+      "mode": "standard",
+      "ocrMode": "force",
+      "lang": "",
+      "chartRecognition": false,
+      "coordinates": true,
+      "mergeMultipageTables": false,
+      "outputFormats": [
+        "html",
+        "text"
+      ],
+      "base64Encoding": [
+        "figure"
+      ]
+    },
+    "documentClassifyConfiguration": {
+      "schema": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "document-classify",
+          "schema": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "Red",
+                "description": "현재 주차 이후에 Red 주간이 하나 이상 있다."
+              },
+              {
+                "const": "Yellow",
+                "description": "현재 주차 이후 Red는 없고 Yellow 주간이 있다."
+              },
+              {
+                "const": "Green",
+                "description": "현재 주차 이후 Red와 Yellow 주간이 없다. 미정 일정이 있으면 별도 확인을 안내한다."
+              }
+            ]
+          }
+        }
+      },
+      "modelName": ""
+    },
+    "informationExtractConfiguration": {
+      "modelName": "",
+      "schemas": [
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "Extract_Red",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "risk_level": {
+                  "type": "string",
+                  "description": "병합 리포트의 현재 주차 이후 위험도 중 최댓값 Red/Yellow/Green. 규칙을 재계산하거나 숫자를 바꾸지 않는다."
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "앞으로의 집중 주간과 우선순위를 입력 근거로 설명. 일정 집중과 실제 시간 충돌을 구분한다."
+                },
+                "recommendations": {
+                  "type": "string",
+                  "description": "입력 리포트의 추천 순서와 시간 제안을 설명한다. 원문에 없는 시험일·마감·학습시간을 생성하지 않는다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "evidence": {
+                  "type": "string",
+                  "description": "추천 근거인 과목명·주차·비중을 입력에서 인용한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "needs_confirmation": {
+                  "type": "string",
+                  "description": "주차 또는 비중 미정, 원문 근거 부족, 개인 일정 미입력 등을 정리한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                }
+              }
+            }
+          },
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "risk_level",
+                "source": "root"
+              },
+              {
+                "name": "summary",
+                "source": "root"
+              },
+              {
+                "name": "recommendations",
+                "source": "root"
+              },
+              {
+                "name": "evidence",
+                "source": "root"
+              },
+              {
+                "name": "needs_confirmation",
+                "source": "root"
+              }
+            ]
+          },
+          "mode": "standard",
+          "modelName": "",
+          "nodeMode": "extract"
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "Extract_Yellow",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "risk_level": {
+                  "type": "string",
+                  "description": "병합 리포트의 현재 주차 이후 위험도 중 최댓값 Red/Yellow/Green. 규칙을 재계산하거나 숫자를 바꾸지 않는다."
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "앞으로의 집중 주간과 우선순위를 입력 근거로 설명. 일정 집중과 실제 시간 충돌을 구분한다."
+                },
+                "recommendations": {
+                  "type": "string",
+                  "description": "입력 리포트의 추천 순서와 시간 제안을 설명한다. 원문에 없는 시험일·마감·학습시간을 생성하지 않는다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "evidence": {
+                  "type": "string",
+                  "description": "추천 근거인 과목명·주차·비중을 입력에서 인용한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "needs_confirmation": {
+                  "type": "string",
+                  "description": "주차 또는 비중 미정, 원문 근거 부족, 개인 일정 미입력 등을 정리한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                }
+              }
+            }
+          },
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "risk_level",
+                "source": "root"
+              },
+              {
+                "name": "summary",
+                "source": "root"
+              },
+              {
+                "name": "recommendations",
+                "source": "root"
+              },
+              {
+                "name": "evidence",
+                "source": "root"
+              },
+              {
+                "name": "needs_confirmation",
+                "source": "root"
+              }
+            ]
+          },
+          "mode": "standard",
+          "modelName": "",
+          "nodeMode": "extract"
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "Extract_Green",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "risk_level": {
+                  "type": "string",
+                  "description": "병합 리포트의 현재 주차 이후 위험도 중 최댓값 Red/Yellow/Green. 규칙을 재계산하거나 숫자를 바꾸지 않는다."
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "앞으로의 집중 주간과 우선순위를 입력 근거로 설명. 일정 집중과 실제 시간 충돌을 구분한다."
+                },
+                "recommendations": {
+                  "type": "string",
+                  "description": "입력 리포트의 추천 순서와 시간 제안을 설명한다. 원문에 없는 시험일·마감·학습시간을 생성하지 않는다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "evidence": {
+                  "type": "string",
+                  "description": "추천 근거인 과목명·주차·비중을 입력에서 인용한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                },
+                "needs_confirmation": {
+                  "type": "string",
+                  "description": "주차 또는 비중 미정, 원문 근거 부족, 개인 일정 미입력 등을 정리한다. 항목은 줄바꿈으로 구분한 문자열로 기록. 없으면 빈 문자열."
+                }
+              }
+            }
+          },
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "risk_level",
+                "source": "root"
+              },
+              {
+                "name": "summary",
+                "source": "root"
+              },
+              {
+                "name": "recommendations",
+                "source": "root"
+              },
+              {
+                "name": "evidence",
+                "source": "root"
+              },
+              {
+                "name": "needs_confirmation",
+                "source": "root"
+              }
+            ]
+          },
+          "mode": "standard",
+          "modelName": "",
+          "nodeMode": "extract"
+        }
+      ],
+      "categorySchemaMapping": {
+        "Red": "Extract_Red",
+        "Yellow": "Extract_Yellow",
+        "Green": "Extract_Green"
+      },
+      "confidenceThreshold": 0.9676
+    },
+    "pipelineEdges": [
+      {
+        "id": "e0",
+        "source": {
+          "nodeType": "parse"
+        },
+        "target": {
+          "nodeType": "classify",
+          "name": "Classify-1"
+        }
+      },
+      {
+        "id": "e1",
+        "source": {
+          "nodeType": "classify",
+          "name": "Classify-1"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "Extract_Red"
+        },
+        "condition": {
+          "conditionName": "Red"
+        }
+      },
+      {
+        "id": "e2",
+        "source": {
+          "nodeType": "classify",
+          "name": "Classify-1"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "Extract_Yellow"
+        },
+        "condition": {
+          "conditionName": "Yellow"
+        }
+      },
+      {
+        "id": "e3",
+        "source": {
+          "nodeType": "classify",
+          "name": "Classify-1"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "Extract_Green"
+        },
+        "condition": {
+          "conditionName": "Green"
+        }
+      }
+    ]
+  }
+}

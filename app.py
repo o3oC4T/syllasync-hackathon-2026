@@ -13,10 +13,18 @@ from analysis import analyze, report_text
 from models import Course, Dataset, Schedule
 from pdf_export import text_pdf
 from studio import StudioClient, StudioError
+from studio_contract import normalize_course, normalize_schedule
 import ui
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / ".env")
+AGENTS = json.loads((ROOT / "studio_agents.json").read_text(encoding="utf-8"))
+
+
+def agent_setting(name):
+    return os.getenv(name) or AGENTS.get(name, "")
+
+
 st.set_page_config(page_title="SyllaSync · 나의 학기 지도", page_icon="🌿", layout="wide")
 ui.styles()
 
@@ -41,9 +49,9 @@ with st.sidebar:
         api_key = entered_api_key.strip() or os.getenv("UPSTAGE_API_KEY", "")
         if os.getenv("UPSTAGE_API_KEY"):
             st.caption("서버에 API 키가 설정되어 있습니다. 개인 키를 입력하면 이번 세션에 우선 사용합니다.")
-        syllabus_id = st.text_input("Syllabus Agent ID", value=os.getenv("SYLLABUS_AGENT_ID", ""))
-        schedule_id = st.text_input("Schedule Agent ID", value=os.getenv("SCHEDULE_AGENT_ID", ""))
-        load_id = st.text_input("Load Agent ID", value=os.getenv("LOAD_AGENT_ID", ""))
+        syllabus_id = st.text_input("Syllabus Agent ID", value=agent_setting("SYLLABUS_AGENT_ID"))
+        schedule_id = st.text_input("Schedule Agent ID", value=agent_setting("SCHEDULE_AGENT_ID"))
+        load_id = st.text_input("Load Agent ID", value=agent_setting("LOAD_AGENT_ID"))
         st.caption("Config ID는 .env에서 설정합니다. API 모드에서 업로드한 문서는 Upstage로 전송됩니다.")
     connection_label = "연결 정보 입력됨 · 실행 시 검증" if api_key and syllabus_id else "Upstage 연결 설정 필요"
     ui.render(f'<div class="ss-connection">{ui.icon("plug-connected")}{connection_label}</div>')
@@ -90,13 +98,12 @@ else:
                 with st.status("Studio에서 문서를 분석하고 있습니다.", expanded=True) as status:
                     for file in files:
                         st.write("강의계획서 분석: " + file.name)
-                        raw = client.run(file.name, file.getvalue(), syllabus_id, os.getenv("SYLLABUS_CONFIG_ID", ""))
-                        raw["source_file"] = file.name
-                        courses.append(Course.model_validate(raw))
+                        raw = client.run(file.name, file.getvalue(), syllabus_id, agent_setting("SYLLABUS_CONFIG_ID"))
+                        courses.append(Course.model_validate(normalize_course(raw, file.name)))
                     schedule = None
                     if schedule_file:
                         st.write("개인 일정표 분석 중")
-                        schedule = Schedule.model_validate(client.run(schedule_file.name, schedule_file.getvalue(), schedule_id, os.getenv("SCHEDULE_CONFIG_ID", "")))
+                        schedule = Schedule.model_validate(normalize_schedule(client.run(schedule_file.name, schedule_file.getvalue(), schedule_id, agent_setting("SCHEDULE_CONFIG_ID"))))
                     data = Dataset(provenance="Upstage Studio API 실행 결과 · 원문 대조 필요", courses=courses, schedule=schedule)
                     st.session_state.dataset = data.model_dump(mode="json")
                     st.session_state.dataset_mode = mode
@@ -189,7 +196,14 @@ with edit:
                 i += 1
         if not changed.get("schedule"):
             changed["schedule"] = {"course_names": [], "constraints": [], "evidence": "사용자 입력"}
-        changed["schedule"]["available_hours_per_week"] = hours_value if has_hours else None
+        new_hours = hours_value if has_hours else None
+        if changed["schedule"].get("available_hours_per_week") != new_hours:
+            label = f"{new_hours:g}시간" if new_hours is not None else "미입력"
+            changed["schedule"]["evidence"] = (
+                "사용자 수정: 현재 주간 학습 가능 시간 " + label
+                + ". 원문 기록: " + (changed["schedule"].get("evidence") or "미기재")
+            )
+        changed["schedule"]["available_hours_per_week"] = new_hours
         try:
             st.session_state.dataset = Dataset.model_validate(changed).model_dump(mode="json")
             st.session_state.pop("load_result", None)
@@ -205,7 +219,7 @@ with flow:
         try:
             with st.spinner("Load Agent 실행 중"):
                 client = get_client()
-                st.session_state.load_result = client.run("SyllaSync_Load_Input.pdf", text_pdf("SyllaSync 병합 분석", text), load_id, os.getenv("LOAD_CONFIG_ID", ""))
+                st.session_state.load_result = client.run("SyllaSync_Load_Input.pdf", text_pdf("SyllaSync 병합 분석", text), load_id, agent_setting("LOAD_CONFIG_ID"))
                 st.session_state.load_basis = text
             for warning in client.cleanup_warnings:
                 st.warning(warning)

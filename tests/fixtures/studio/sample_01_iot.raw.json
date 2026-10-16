@@ -1,0 +1,55 @@
+{
+  "course_name": "IoT 기초",
+  "source_file": "",
+  "notes": "",
+  "assessments": [
+    {
+      "name": "출석",
+      "weight": 10
+    },
+    {
+      "name": "중간고사",
+      "weight": 25
+    },
+    {
+      "name": "기말고사",
+      "weight": 25
+    },
+    {
+      "name": "프로젝트",
+      "weight": 40
+    }
+  ],
+  "events": [
+    {
+      "title": "중간고사",
+      "kind": "exam",
+      "week": 8,
+      "due_date": "",
+      "weight": 25,
+      "submission": "미기재",
+      "evidence": "8주차 중간고사, 평가 비중 25%.",
+      "page": 1
+    },
+    {
+      "title": "최종 프로젝트 발표 및 시연",
+      "kind": "project",
+      "week": 14,
+      "due_date": "",
+      "weight": 40,
+      "submission": "미기재",
+      "evidence": "14주차 최종 프로젝트 발표 및 시연, 평가 비중 40%.",
+      "page": 1
+    },
+    {
+      "title": "기말고사",
+      "kind": "exam",
+      "week": 16,
+      "due_date": "",
+      "weight": 25,
+      "submission": "미기재",
+      "evidence": "16주차 기말고사, 평가 비중 25%.",
+      "page": 1
+    }
+  ]
+}

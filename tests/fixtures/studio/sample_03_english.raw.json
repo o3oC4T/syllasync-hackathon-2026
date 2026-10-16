@@ -1,0 +1,59 @@
+{
+  "course_name": "Global English II",
+  "source_file": "",
+  "notes": "평가방법 합계는 100%로 확인됨. 읽기 과제의 제출 마감일은 추후 공지이므로 due_date는 null. 정확한 시험 날짜와 시각은 문서에 없음.",
+  "assessments": [
+    {
+      "name": "출석",
+      "weight": 10
+    },
+    {
+      "name": "참여",
+      "weight": 10
+    },
+    {
+      "name": "중간고사",
+      "weight": 30
+    },
+    {
+      "name": "기말고사",
+      "weight": 30
+    },
+    {
+      "name": "읽기 과제",
+      "weight": 20
+    }
+  ],
+  "events": [
+    {
+      "title": "Midterm Exam",
+      "kind": "exam",
+      "week": 8,
+      "due_date": "",
+      "weight": 30,
+      "submission": "미기재",
+      "evidence": "8주차 Midterm Exam, 평가 비중 30%.",
+      "page": 1
+    },
+    {
+      "title": "Final Exam",
+      "kind": "exam",
+      "week": 16,
+      "due_date": "",
+      "weight": 30,
+      "submission": "미기재",
+      "evidence": "16주차 Final Exam, 평가 비중 30%.",
+      "page": 1
+    },
+    {
+      "title": "읽기 과제",
+      "kind": "assignment",
+      "week": 0,
+      "due_date": "",
+      "weight": 20,
+      "submission": "LMS 제출",
+      "evidence": "읽기 과제 평가 비중 20%. 제출 마감일은 추후 공지. LMS 제출.",
+      "page": 1
+    }
+  ]
+}

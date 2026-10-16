@@ -65,6 +65,10 @@
                 "events": {
                   "items": {
                     "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "원문에 기재된 시험·과제·프로젝트·발표의 이름."
+                      },
                       "kind": {
                         "enum": [
                           "exam",

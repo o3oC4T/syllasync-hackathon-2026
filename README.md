@@ -6,15 +6,13 @@
 
 **[공개 데모 열기](https://syllasync-hackathon-2026-es3u98ijuj2rytawpirmvv.streamlit.app/)** — API 키 없이 가상 샘플 대시보드를 체험할 수 있습니다.
 
-| 이름 | 역할 |
+| 이름 | 역할 및 주요 담당 |
 |---|---|
-| 최영 | 팀장 |
-| 신효재 | 팀원 |
-| 박준영 | 팀원 |
-| 박재현 | 팀원 |
-| 김진영 | 팀원 |
-
-팀원별 세부 담당은 아직 기재하지 않았습니다.
+| 최영 | 팀장 · 프로젝트 총괄 — 서비스 기획 및 구현 총괄, 웹 UI 개선, Upstage API 연동·검증, 외부 배포, 데모·발표자료 및 최종 제출 총괄 |
+| 신효재 | 서비스 기획 · UX 검토 — 사용자 이용 시나리오와 화면 흐름 검토, 서비스 사용성 개선 지원 |
+| 박준영 | 서비스 기획 — 2라운드 프로젝트 기획서 작성, 문제 정의와 서비스 요구사항 정리 |
+| 박재현 | Studio Agent 구성 — 2라운드 Studio JSON 파일 제작, 문서 추출 워크플로우 구성 |
+| 김진영 | 품질 검증 · 발표 준비 — 테스트 시나리오와 결과 확인 항목 정리, 시연·발표 준비 지원 |
 
 ![SyllaSync 전체 처리 흐름](assets/overview.png)
 
@@ -67,21 +65,21 @@ GitHub 저장소의 코드를 Streamlit Community Cloud에 연결해 무료로 �
 
 Tabler CSS는 `.ss` 영역으로 범위를 제한해 Streamlit 기본 입력창과 분리했습니다. 추가 스타일은 `assets/dashboard.css`, 화면 구성요소는 `ui.py`에 있습니다. 두 프로젝트의 MIT 저작권·허가문은 `assets/vendor/`에 보존했으며, Streamlit은 화면 검증에 사용한 `1.66.0`으로 고정했습니다.
 
-디자인 개선은 실제 Upstage 연결 완료를 뜻하지 않습니다. API 키와 팀 Agent ID를 설정한 뒤 실제 문서로 실행 검증해야 합니다.
+학교 계정의 Studio Agent 3개를 생성하고 강의계획서·일정표·병합 리포트로 실제 API 실행을 확인했습니다. 공개 사이트의 가상 샘플 모드와 실제 API 모드는 구분해 표시합니다.
 
 ## 현재 구현 범위
 
 | 기능 | 상태 |
 |---|---|
-| 다과목 주차 병합, 집중 주간, 준비 우선순위 | 가상 샘플로 로컬 검증 |
+| 다과목 주차 병합, 집중 주간, 준비 우선순위 | 가상 샘플 및 실제 Studio 추출 결과로 검증 |
 | 근거 문장·출처 확인, 미정 값 표시, 일정 수정 | 구현 및 화면 검증 |
 | PDF 리포트·JSON 내보내기 | 구현 및 다운로드 검증 |
-| Upstage Studio Files / Responses 연동 | 코드 구현, 요청 구조와 오류 처리를 모의 응답으로 검증 |
-| Syllabus / Schedule / Load Agent | Studio 가져오기용 설정 초안 제공 |
-| 실제 Studio 실행·추출 정확도 | API 키와 팀 Agent ID가 없어 미검증 |
+| Upstage Studio Files / Responses 연동 | 실제 파일 업로드·작업 생성·조회·완료·파일 삭제 확인 |
+| Syllabus / Schedule / Load Agent | 실제 구성·실행 완료, *.studio.json 최종 내보내기 제공 |
+| 실제 Studio 실행·추출 확인 | 가상 문서 4개: 과목명 3/3, 일정 주차·비중 각 9/9, 가용시간 12시간 일치 |
 | 외부 사이트 배포 | Streamlit Community Cloud 공개 배포, 비로그인 접속·수정·다운로드·모바일 확인 |
 
-`data/demo.json`은 직접 작성한 가상 PDF에 맞춘 수작업 정답 데이터입니다. API 추출 결과나 모델 정확도 측정 자료가 아닙니다. `agent_configs/*.draft.json`은 공개 스타터 코드의 설정 구조를 참고해 새로 구성한 초안이며, 팀 Studio에서 내보낸 최종 파일이 아닙니다.
+`data/demo.json`은 직접 작성한 가상 PDF에 맞춘 수작업 정답 데이터입니다. API 추출 결과나 모델 정확도 측정 자료가 아닙니다. `agent_configs/*.studio.json`은 실제 Studio에서 내보낸 최종 설정입니다. `*.draft.json`은 초기 설계 참고용입니다. 실제 추출 응답은 `tests/fixtures/studio/`에 보관했으며, 테스트 결과는 소규모 가상 문서에 한정됩니다.
 
 ## 처리 흐름
 
@@ -101,11 +99,12 @@ Studio API 모드에서는 파일을 `/v2/files`로 업로드하고 `/v2/respons
 
 ## 실제 Studio 연결
 
-1. `agent_configs`의 초안을 Studio에서 가져오거나 같은 노드·스키마로 에이전트를 구성합니다. Studio 버전에 따라 가져오기 형식 조정이 필요할 수 있습니다.
-2. `data/sample_01_iot.pdf`, `sample_02_statistics.pdf`, `sample_03_english.pdf`를 Syllabus Agent로 각각 실행해 출력 구조와 근거를 확인합니다. Schedule Agent는 `sample_04_schedule.pdf`로 확인합니다.
-3. `.env.example`을 `.env`로 복사해 API 키와 Agent ID를 입력합니다. Config ID는 Studio의 Use via API에서 확인한 값을 사용하거나 비워서 최신 설정을 사용합니다.
-4. 앱의 **Studio API 분석**에서 PDF를 올려 분석합니다. **처리 흐름** 탭에서 Load Agent를 실행할 수 있습니다.
-5. Studio에서 최종 설정을 내보내어 제출합니다. 이 저장소의 초안을 실제 내보내기 파일로 오인하지 않도록 합니다.
+1. 학교 계정용 Agent ID와 실행한 Config 버전은 `studio_agents.json`에 기본 설정했습니다. 이 값에는 API 키가 없습니다.
+2. **Studio 연결 설정**에 해당 계정의 API 키를 입력하거나 `.env` / Streamlit Secrets의 `UPSTAGE_API_KEY`에 설정합니다.
+3. **Studio API 분석**에서 강의계획서와 개인 일정표를 업로드합니다. **처리 흐름**에서 Load Agent 전략 설명을 생성할 수 있습니다.
+4. 다른 계정으로 재현할 때는 `agent_configs/*.studio.json`을 Studio에서 가져와 샘플로 실행한 뒤, Agent ID와 Config ID 환경변수를 자신의 값으로 변경합니다.
+
+Studio의 빈 날짜 문자열과 0 주차·페이지는 미정으로 변환합니다. 평가 비중 0%와 가용시간 0시간은 유효한 값으로 보존하며 범위를 벗어난 값은 검증 오류로 표시합니다.
 
 API 키는 서버 환경 또는 비밀번호 입력란에서 읽습니다. `.env`와 업로드 원문은 저장소에 포함하지 않습니다. 처리 후 업로드 파일 삭제를 요청하며, 삭제에 실패하면 화면에 알립니다. 서비스 제공자의 작업 기록 보존 정책까지 삭제를 보장하지는 않습니다.
 
@@ -127,7 +126,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q tests
 ```
 
-검증 항목: 8·16주차 집중, 14주차 주의, 미정 일정 제외, 지난 일정 제외, 평가 비중 범위, 날짜 환산, 중복 제외, API 결과 파싱, 파일 정리 및 실패 노출. 가상 샘플의 예측 가능한 결과를 확인하는 테스트이며 실제 AI 정확도 측정은 별도 수행해야 합니다.
+자동 테스트 19개: 집중 주간, 미정·지난 일정 제외, 비중 범위, 날짜 환산, 중복, API 응답·파일 정리·오류 표시, 서버 키 비노출, 실제 Studio 응답 호환성을 확인합니다. 실제 API로 가상 PDF 4개를 처리한 결과도 수작업 정답과 대조했습니다. 일반 문서의 추출 정확도와 학습 효과는 추가 평가가 필요합니다.
 
 ## 디렉터리
 
@@ -138,7 +137,9 @@ models.py              추출 데이터 계약 및 검증
 analysis.py            병합·위험도·우선순위
 studio.py              Upstage Files / Responses 클라이언트
 pdf_export.py          PDF 리포트 생성
-agent_configs/         Studio 설정 초안 3개
+studio_contract.py     실제 추출 응답의 빈 값·텍스트 목록 변환
+studio_agents.json      실행 검증한 Agent ID / Config 버전 (비밀키 없음)
+agent_configs/         실제 Studio 최종 내보내기 3개 + 설계 초안
 data/                  가상 PDF 4개와 수작업 정답 JSON
 tests/                 계산·응답·오류 처리 테스트
 assets/dashboard.css   SyllaSync 화면 스타일
