@@ -1,0 +1,84 @@
+{
+  "kind": "studio.agent-config-draft",
+  "agentConfig": {
+    "agent_name": "SyllaSync Schedule Agent",
+    "pipelineType": "extract",
+    "documentParseConfiguration": {
+      "modelName": "document-parse",
+      "mode": "standard",
+      "ocrMode": "force",
+      "lang": "",
+      "chartRecognition": false,
+      "coordinates": true,
+      "mergeMultipageTables": false,
+      "outputFormats": [
+        "html",
+        "text"
+      ],
+      "base64Encoding": []
+    },
+    "informationExtractConfiguration": {
+      "modelName": "",
+      "schemas": [
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "Extract_Schedule",
+            "schema": {
+              "properties": {
+                "course_names": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "description": "개인 일정표에 실제 기재된 수강 과목 목록."
+                },
+                "available_hours_per_week": {
+                  "anyOf": [
+                    {
+                      "maximum": 168,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "명시된 주간 자율학습 가능 시간만 추출. 빈칸을 학습 가능 시간으로 추정하지 말고 미기재 시 null."
+                },
+                "constraints": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "description": "고정 개인 일정 및 시간 제약의 원문 표현. 이름·연락처는 추출하지 않는다."
+                },
+                "evidence": {
+                  "type": "string",
+                  "description": "주간 가용시간과 제약을 뒷받침하는 원문 문장."
+                }
+              },
+              "type": "object"
+            }
+          },
+          "mode": "standard",
+          "modelName": ""
+        }
+      ],
+      "categorySchemaMapping": {},
+      "location": true
+    },
+    "pipelineEdges": [
+      {
+        "id": "e0",
+        "source": {
+          "nodeType": "parse"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "Extract_Schedule"
+        }
+      }
+    ]
+  }
+}

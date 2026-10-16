@@ -1,0 +1,193 @@
+{
+  "provenance": "직접 작성한 가상 강의계획서 3개와 수작업 정답 JSON · AI 추출 결과 아님",
+  "courses": [
+    {
+      "course_name": "IoT 기초",
+      "source_file": "sample_01_iot.pdf",
+      "assessments": [
+        {
+          "name": "출석",
+          "weight": 10
+        },
+        {
+          "name": "중간고사",
+          "weight": 25
+        },
+        {
+          "name": "기말고사",
+          "weight": 25
+        },
+        {
+          "name": "프로젝트",
+          "weight": 40
+        }
+      ],
+      "events": [
+        {
+          "title": "중간고사",
+          "kind": "exam",
+          "week": 8,
+          "due_date": null,
+          "weight": 25,
+          "submission": "대면 시험",
+          "evidence": "8주차 중간고사, 평가 비중 25%.",
+          "page": 1
+        },
+        {
+          "title": "최종 프로젝트",
+          "kind": "project",
+          "week": 14,
+          "due_date": null,
+          "weight": 40,
+          "submission": "발표 및 시연",
+          "evidence": "14주차 최종 프로젝트 발표 및 시연, 평가 비중 40%.",
+          "page": 1
+        },
+        {
+          "title": "기말고사",
+          "kind": "exam",
+          "week": 16,
+          "due_date": null,
+          "weight": 25,
+          "submission": "대면 시험",
+          "evidence": "16주차 기말고사, 평가 비중 25%.",
+          "page": 1
+        }
+      ],
+      "notes": [
+        "서비스 시연을 위해 직접 작성한 가상 강의계획서입니다."
+      ]
+    },
+    {
+      "course_name": "통계학 입문",
+      "source_file": "sample_02_statistics.pdf",
+      "assessments": [
+        {
+          "name": "출석",
+          "weight": 10
+        },
+        {
+          "name": "중간고사",
+          "weight": 30
+        },
+        {
+          "name": "기말고사",
+          "weight": 40
+        },
+        {
+          "name": "분석 보고서",
+          "weight": 20
+        }
+      ],
+      "events": [
+        {
+          "title": "중간고사",
+          "kind": "exam",
+          "week": 8,
+          "due_date": null,
+          "weight": 30,
+          "submission": "대면 시험",
+          "evidence": "8주차 중간고사, 평가 비중 30%.",
+          "page": 1
+        },
+        {
+          "title": "데이터 분석 보고서",
+          "kind": "assignment",
+          "week": 14,
+          "due_date": null,
+          "weight": 20,
+          "submission": "LMS 업로드",
+          "evidence": "14주차 데이터 분석 보고서를 LMS에 제출한다. 평가 비중 20%.",
+          "page": 1
+        },
+        {
+          "title": "기말고사",
+          "kind": "exam",
+          "week": 16,
+          "due_date": null,
+          "weight": 40,
+          "submission": "대면 시험",
+          "evidence": "16주차 기말고사, 평가 비중 40%.",
+          "page": 1
+        }
+      ],
+      "notes": [
+        "서비스 시연을 위해 직접 작성한 가상 강의계획서입니다."
+      ]
+    },
+    {
+      "course_name": "Global English II",
+      "source_file": "sample_03_english.pdf",
+      "assessments": [
+        {
+          "name": "출석",
+          "weight": 10
+        },
+        {
+          "name": "참여",
+          "weight": 10
+        },
+        {
+          "name": "중간고사",
+          "weight": 30
+        },
+        {
+          "name": "기말고사",
+          "weight": 30
+        },
+        {
+          "name": "읽기 과제",
+          "weight": 20
+        }
+      ],
+      "events": [
+        {
+          "title": "중간고사",
+          "kind": "exam",
+          "week": 8,
+          "due_date": null,
+          "weight": 30,
+          "submission": "대면 시험",
+          "evidence": "8주차 Midterm Exam, 평가 비중 30%.",
+          "page": 1
+        },
+        {
+          "title": "기말고사",
+          "kind": "exam",
+          "week": 16,
+          "due_date": null,
+          "weight": 30,
+          "submission": "대면 시험",
+          "evidence": "16주차 Final Exam, 평가 비중 30%.",
+          "page": 1
+        },
+        {
+          "title": "읽기 과제",
+          "kind": "assignment",
+          "week": null,
+          "due_date": null,
+          "weight": 20,
+          "submission": "LMS 업로드",
+          "evidence": "읽기 과제 평가 비중 20%. 제출 마감일은 추후 공지. LMS 제출.",
+          "page": 1
+        }
+      ],
+      "notes": [
+        "서비스 시연을 위해 직접 작성한 가상 강의계획서입니다."
+      ]
+    }
+  ],
+  "schedule": {
+    "course_names": [
+      "IoT 기초",
+      "통계학 입문",
+      "Global English II"
+    ],
+    "available_hours_per_week": 12,
+    "constraints": [
+      "수업·개인 일정 외 학습 가능 시간은 주 12시간이라고 가정한다.",
+      "시험의 정확한 시간은 미정이다."
+    ],
+    "evidence": "주간 학습 가능 시간 12시간. 시험 시각 미정."
+  }
+}
